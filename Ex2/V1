@@ -1,0 +1,82 @@
+void analyzeLine(char* line, char*** historyList) {
+    int wordCount = 0;
+    int startingIndex = 0;
+    char toSaveInHistory[MAX_LINE_LENGTH + 1]; // ultimately the string that will be saved in historyList
+    toSaveInHistory[0] = '\0';
+
+    //find a word (words are separated by spaces), allocate memory for it, print info to the user, free memory allocated to word
+    for (int i = 0; i < strlen(line) + 1; i++) {
+        if (line[i] == ' ' || line[i] == '\0') {
+            //if spaces at the start, skip them
+            if (i == 0) {
+                //skip all spaces
+                while (i < strlen(line) - 1 && line[i + 1] == ' ') {
+                    i++;
+                }
+                startingIndex = i + 1;
+                continue;
+            }
+            //allocate memory for word, save it in toSaveInHistory and free word
+            wordCount++;
+            char* word = (char*)malloc(sizeof(char) * (i - startingIndex + 1));
+            if (word == NULL) {
+                fprintf(stderr,"malloc failed for char* word in analyzeLine()\n");
+                exit(1);
+            }
+            strncpy(word, line + startingIndex, i - startingIndex);
+            word[i - startingIndex] = '\0';
+            strcat(toSaveInHistory, word);
+            if (line[i] == ' '){
+                strcat(toSaveInHistory, " ");
+            }
+            free(word);
+            //skip all spaces
+            while (i < strlen(line) - 1 && line[i + 1] == ' ') {
+                i++;
+            }
+            startingIndex = i + 1;
+        }
+    }
+
+    if (toSaveInHistory[0] == '!'){
+        //execute history command
+        //get index
+        char historyIndexString[MAX_LINE_LENGTH + 1];
+        strcpy(historyIndexString, toSaveInHistory);
+        // get first word of toSaveInHistory, remove '!' and convert the rest of the string to int
+        char * split = strtok(historyIndexString, " ");
+        int j = 0; //index of historyIndexString
+        for (int i = 0; i < strlen(split); i++) {
+            if (split[i] != '!'){
+                historyIndexString[j] = split[i];
+                j++;
+            }
+        }
+        historyIndexString[j] = '\0';
+        int index = atoi(historyIndexString);
+        //check if user entered an invalid number
+        if (index >= 0 && index < historyCapacity){
+            executeCommandHelper(wordCount, (*historyList)[index]);
+        }else{
+            printf("Command !%d not found\n",index);
+        }
+    }else{
+        //execute normal command
+        executeCommandHelper(wordCount, toSaveInHistory);
+    }
+
+    //avoid inserting history commands like !435 to history file
+    if (toSaveInHistory[0] != '!'){
+        //save toSaveInHistory to historyList. if we lack space, expand historyList and add after expanding.
+        if (historyCapacity >= historySize) {
+            expandList(historyList, historySize, historyCapacity, EXPAND_LIST_MULTIPLIER);
+        }
+        (*(historyList))[historyCapacity] = (char*)malloc(sizeof(char) * (strlen(toSaveInHistory) + 1));
+        if ((*(historyList))[historyCapacity] == NULL) {
+            fprintf(stderr,"malloc failed for (*(historyList))[historyCapacity]\n");
+            exit(1);
+        }
+        strcpy((*historyList)[historyCapacity], toSaveInHistory);
+        historyCapacity++;
+    }
+}
