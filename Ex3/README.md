@@ -2,7 +2,7 @@ Shell Simulator+ - Ex3
 ID: 211313333
 Name: Aviv Zvuluny
 
-Description:
+# Description:
     - This program simulates the linux bash command line.
     
     - The program supports normal commands, single pipe commands, double pipe commands, ampersand commands and nohup commands.
@@ -15,7 +15,7 @@ Description:
     - every command is being saved into a file named "history", 
       and info on all the commands will be printed when the user enters "done".
 
-Program DATABASE:
+# Program DATABASE:
     - The main way to store data in this program is by using a char ** list that contains all the strings the user has entered.
       this data is stored in the variable historyList
 
@@ -23,7 +23,7 @@ Program DATABASE:
 
     - arguments to execute each commands are being saved in a list called argv, which gets deallocated after each execution
 
-Functions:
+# Functions:
     - void loadHistory(char*, char***);             - loads data from history file to historyList
     - void saveHistory(char*, char** const);        - saves data from historyList to history file
     - void printHistory(char**);                    - prints all the data in historyList
@@ -48,18 +48,18 @@ Functions:
     - int convertExclamationsToCommands(char*, char*, char***);     - converts all commands in the format !<command index> to their real command.
 
 
-Program Files
+# Program Files
     - ex3.c - contains the entire functionality of ex2b.c, and adds support for pipes, nohup and ampersand commands
     - history - stores entered commands
 
-compile and run (Linux):
+# compile and run (Linux):
     - compile: gcc ex3.c -o ex3
     - run: ./ex3
 
-Input:
+# Input:
     - a string with max of 512 characters (can be changed by changing MAX_LINE_LENGTH)
 
-Output:
+# Output:
     - <command entered by the user> for each command
     - <num of commands, num of pipe commands> if the word "done" is entered
 
